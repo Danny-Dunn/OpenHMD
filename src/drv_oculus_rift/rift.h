@@ -29,6 +29,7 @@ typedef enum {
 	RIFT_CMD_RADIO_CONTROL = 0x1a,
 	RIFT_CMD_RADIO_READ_DATA = 0x1b,
 	RIFT_CMD_ENABLE_COMPONENTS = 0x1d,
+	RIFT_CMD_PROX_SENSOR = 0x1f,
 } rift_sensor_feature_cmd;
 
 typedef enum {
@@ -359,6 +360,7 @@ bool decode_tracker_sensor_msg_dk2(pkt_tracker_sensor* msg, const unsigned char*
 bool decode_position_info(pkt_position_info* p, const unsigned char* buffer, int size);
 bool decode_led_pattern_info(pkt_led_pattern_report * p, const unsigned char* buffer, int size);
 bool decode_radio_address(uint8_t radio_address[5], const unsigned char* buffer, int size);
+bool decode_prox_sensor(unsigned short* head_proximity, const unsigned char* buffer, int size);
 
 bool decode_rift_radio_report(pkt_rift_radio_report *r, const unsigned char* buffer, int size);
 

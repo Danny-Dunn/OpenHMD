@@ -142,6 +142,21 @@ bool decode_imu_calibration(pkt_imu_calibration *imu_calib, const unsigned char*
 	return true;
 }
 
+bool decode_prox_sensor(unsigned short* head_proximity, const unsigned char* buffer, int size)
+{
+	if(size != 20) {
+		LOGE("invalid packet size (expected 20 but got %d)", size);
+		return false;
+	}
+
+	SKIP_CMD;
+	SKIP16;
+	SKIP8;
+	*head_proximity = READ16;
+
+	return true;
+}
+
 bool decode_sensor_display_info(pkt_sensor_display_info* info, const unsigned char* buffer, int size)
 {
 	if(!(size == 56 || size == 57)){

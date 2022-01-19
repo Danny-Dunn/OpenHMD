@@ -39,6 +39,8 @@
 #define KEEP_ALIVE_VALUE (10 * 1000)
 #define SETFLAG(_s, _flag, _val) (_s) = ((_s) & ~(_flag)) | ((_val) ? (_flag) : 0)
 
+#define PROX_SENSOR_THRESHOLD 8
+
 typedef enum {
 	REV_DK1,
 	REV_DK2,
@@ -81,6 +83,8 @@ struct rift_hmd_s {
 	/* OpenHMD output devices */
 	rift_device_priv hmd_dev;
 	rift_touch_controller_t touch_dev[2];
+
+	bool prox_state;
 };
 
 typedef struct device_list_s device_list_t;
@@ -574,6 +578,18 @@ static void update_hmd(rift_hmd_t *priv)
 	/* Update any haptics state first */
 	check_haptics_state(priv, start, &priv->touch_dev[0]);
 	check_haptics_state(priv, start, &priv->touch_dev[1]);
+
+	// Turn off displays if prox sensor reads far 
+	unsigned short head_proximity = 0;
+	int size = get_feature_report(priv, RIFT_CMD_PROX_SENSOR, buffer);
+	decode_prox_sensor(&head_proximity, buffer, size);
+	bool new_prox_state = (head_proximity > PROX_SENSOR_THRESHOLD);
+	if(new_prox_state != priv->prox_state) {
+		priv->prox_state = new_prox_state;
+		size = encode_enable_components(buffer, new_prox_state, true, true);
+		if (send_feature_report(priv, buffer, size) == -1)
+			LOGE("error changing screen power on prox sensor change");
+	}
 
 	// Read all the messages from the device.
 	do {
@@ -1146,6 +1162,10 @@ static rift_hmd_t *open_hmd(ohmd_driver* driver, ohmd_device_desc* desc)
 	size = get_feature_report(priv, RIFT_CMD_SENSOR_CONFIG, buf);
 	decode_sensor_config(&priv->sensor_config, buf, size);
 	dump_packet_sensor_config(&priv->sensor_config);
+
+	unsigned short head_proximity = 0;
+	size = get_feature_report(priv, RIFT_CMD_PROX_SENSOR, buf);
+	decode_prox_sensor(&head_proximity, buf, size);
 
 	// if the sensor has display info data, use HMD coordinate frame
 	priv->coordinate_frame = priv->display_info.distortion_type != RIFT_DT_NONE ? RIFT_CF_HMD : RIFT_CF_SENSOR;
