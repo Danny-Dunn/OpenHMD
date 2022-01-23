@@ -589,9 +589,9 @@ static void update_hmd(rift_hmd_t *priv)
 		bool new_prox_state = (head_proximity > PROX_SENSOR_THRESHOLD);
 		if(new_prox_state != priv->prox_state) {
 			priv->prox_state = new_prox_state;
-			size = encode_enable_components(buffer, new_prox_state, true, true);
-			if (send_feature_report(priv, buffer, size) == -1)
-				LOGE("error changing screen power on prox sensor change");
+			//size = encode_enable_components(buffer, new_prox_state, true, true);
+			//if (send_feature_report(priv, buffer, size) == -1)
+				//LOGE("error changing screen power on prox sensor change");
 		}
 		priv->last_prox_update = t;
 	}
@@ -728,6 +728,7 @@ static int getf_hmd(rift_hmd_t *hmd, ohmd_float_value type, float* out)
 		out[6] = (hmd->remote_buttons_state & RIFT_REMOTE_BUTTON_MINUS) != 0;
 		out[7] = (hmd->remote_buttons_state & RIFT_REMOTE_BUTTON_OCULUS) != 0;
 		out[8] = (hmd->remote_buttons_state & RIFT_REMOTE_BUTTON_BACK) != 0;
+		out[9] = (hmd->prox_state) != 0;
 		break;
 
 	default:
@@ -1229,7 +1230,7 @@ static rift_hmd_t *open_hmd(ohmd_driver* driver, ohmd_device_desc* desc)
 
 	if (desc->revision == REV_CV1) {
 		/* On the CV1, add some control mappings for the simple Oculus remote control buttons */
-		hmd_dev->base.properties.control_count = 9;
+		hmd_dev->base.properties.control_count = 10;
 		hmd_dev->base.properties.controls_hints[0] = OHMD_BUTTON_Y; // UP
 		hmd_dev->base.properties.controls_hints[1] = OHMD_BUTTON_A; // DOWN
 		hmd_dev->base.properties.controls_hints[2] = OHMD_BUTTON_X; // LEFT
@@ -1239,6 +1240,7 @@ static rift_hmd_t *open_hmd(ohmd_driver* driver, ohmd_device_desc* desc)
 		hmd_dev->base.properties.controls_hints[6] = OHMD_VOLUME_MINUS;
 		hmd_dev->base.properties.controls_hints[7] = OHMD_MENU; // OCULUS button
 		hmd_dev->base.properties.controls_hints[8] = OHMD_HOME; // Back button
+		hmd_dev->base.properties.controls_hints[9] = OHMD_PROX_SENSOR; // Prox sensor
 
 		hmd_dev->base.properties.controls_types[0] = OHMD_DIGITAL;
 		hmd_dev->base.properties.controls_types[1] = OHMD_DIGITAL;
@@ -1249,6 +1251,7 @@ static rift_hmd_t *open_hmd(ohmd_driver* driver, ohmd_device_desc* desc)
 		hmd_dev->base.properties.controls_types[6] = OHMD_DIGITAL;
 		hmd_dev->base.properties.controls_types[7] = OHMD_DIGITAL;
 		hmd_dev->base.properties.controls_types[8] = OHMD_DIGITAL;
+		hmd_dev->base.properties.controls_types[9] = OHMD_DIGITAL;
 
 		/* And initialise state trackers for the 2 touch controllers */
 		init_touch_device (&priv->touch_dev[0], 1, RIFT_TOUCH_CONTROLLER_RIGHT);

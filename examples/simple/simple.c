@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
 	const char* controls_fn_str[] = { "generic", "trigger", "trigger_click", "squeeze", "menu", "home",
 		"analog-x", "analog-y", "anlog_press", "button-a", "button-b", "button-x", "button-y",
-		"volume-up", "volume-down", "mic-mute"};
+		"volume-up", "volume-down", "mic-mute", "prox-sensor"};
 
 	const char* controls_type_str[] = {"digital", "analog"};
 

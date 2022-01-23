@@ -86,6 +86,7 @@ typedef enum {
 	OHMD_VOLUME_PLUS    = 13,
 	OHMD_VOLUME_MINUS   = 14,
 	OHMD_MIC_MUTE       = 15,
+	OHMD_PROX_SENSOR    = 16,
 } ohmd_control_hint;
 
 /** Control type. Indicates whether controls are digital or analog. */
